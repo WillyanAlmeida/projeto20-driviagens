@@ -1,10 +1,12 @@
 import { Router } from "express";
 import allControllers from "../controllers/all.controller.js";
+import { passengersschema } from "../schemas/all.schemas.js";
+import validateSchema from "../middlewares/validateSchema.js";
 
 
 const allRouter = Router();
 
-allRouter.post("/passengers", allControllers.postPassengers );
+allRouter.post("/passengers", validateSchema(passengersschema), allControllers.postPassengers );
 allRouter.post("/cities", allControllers.postCities);
 
 allRouter.post("/flights", allControllers.postFlights );

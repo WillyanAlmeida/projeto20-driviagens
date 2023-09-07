@@ -1,7 +1,8 @@
-import { db } from "../database/database.connection.js";
+import allRepository from "../repositories/all.repository.js";
 
- async function postPassengers(){
-   
+ async function postPassengers(firstName, lastName){
+  
+  return allRepository.postPassengers(firstName, lastName)
 }
 
  async function postCities(){

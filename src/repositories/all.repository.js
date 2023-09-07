@@ -1,7 +1,10 @@
 import { db } from "../database/database.connection.js";
 
- async function postPassengers(){
-   
+ async function postPassengers(firstName, lastName){
+    await db.query(
+        `INSERT INTO passengers (firstName, lastName) VALUES ($1, $2);`,
+        [firstName, lastName]
+      )
 }
 
  async function postCities(){
