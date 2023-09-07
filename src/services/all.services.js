@@ -1,11 +1,17 @@
 import allRepository from "../repositories/all.repository.js";
+import { conflictError } from "../errors/conflict.js"
 
  async function postPassengers(firstName, lastName){
   
   return allRepository.postPassengers(firstName, lastName)
 }
 
- async function postCities(){
+ async function postCities(name){
+  const existingCities = await allRepository.consultCities(name)
+  
+  if (existingCities) throw conflictError("Cidade")
+
+  return allRepository.postCities(name)
    
 }
 

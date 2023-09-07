@@ -9,8 +9,11 @@ async function postPassengers(req, res){
   res.sendStatus(httpStatus.CREATED)
 }
 
- async function postCities(){
-   
+ async function postCities(req, res){
+  const { name } = req.body  
+
+  await allCompaniService.postCities(name)
+  res.sendStatus(httpStatus.CREATED)
 }
 
  async function postFlights(){

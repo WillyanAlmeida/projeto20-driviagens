@@ -1,13 +1,13 @@
 import { Router } from "express";
 import allControllers from "../controllers/all.controller.js";
-import { passengersschema } from "../schemas/all.schemas.js";
+import { citiesschema, passengersschema } from "../schemas/all.schemas.js";
 import validateSchema from "../middlewares/validateSchema.js";
 
 
 const allRouter = Router();
 
 allRouter.post("/passengers", validateSchema(passengersschema), allControllers.postPassengers );
-allRouter.post("/cities", allControllers.postCities);
+allRouter.post("/cities", validateSchema(citiesschema), allControllers.postCities);
 
 allRouter.post("/flights", allControllers.postFlights );
 allRouter.post("/travels", allControllers.postTravels );

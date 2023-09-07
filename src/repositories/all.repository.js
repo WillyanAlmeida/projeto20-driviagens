@@ -7,7 +7,19 @@ import { db } from "../database/database.connection.js";
       )
 }
 
- async function postCities(){
+async function consultCities(target) {
+    const cities = await db.query(
+      `SELECT * FROM cities WHERE name=$1;`,
+      [target]
+    )
+    return cities.rows[0]
+  }
+
+ async function postCities(name){
+    await db.query(
+        `INSERT INTO cities (name) VALUES ($1);`,
+        [name]
+      )
    
 }
 
@@ -29,6 +41,7 @@ import { db } from "../database/database.connection.js";
 
 const allRepository = {
     postPassengers,
+    consultCities,
     postCities,
     postFlights,
     postTravels,
