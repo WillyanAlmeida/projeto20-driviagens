@@ -1,3 +1,4 @@
+
 import { db } from "../database/database.connection.js";
 
  async function postPassengers(firstName, lastName){
@@ -8,11 +9,21 @@ import { db } from "../database/database.connection.js";
 }
 
 async function consultCities(target) {
+
+  if(typeof(target)=== "string"){
     const cities = await db.query(
       `SELECT * FROM cities WHERE name=$1;`,
       [target]
     )
-    return cities.rows[0]
+    return cities.rows[0]}
+
+  if(typeof(target)=== "number"){
+    const cities = await db.query(
+      `SELECT * FROM cities WHERE id=$1;`,
+      [target]
+    )
+    return cities.rows[0]}
+   
   }
 
  async function postCities(name){
@@ -23,8 +34,11 @@ async function consultCities(target) {
    
 }
 
- async function postFlights(){
-   
+ async function postFlights(origin, destination, date){
+  await db.query(
+    `INSERT INTO flights (origin, destination, date) VALUES ($1, $2, $3);`,
+    [origin, destination, date]
+  )
 }
 
  async function postTravels(){

@@ -1,5 +1,7 @@
+import dayjs from "dayjs";
 import allCompaniService from "../services/all.services.js";
 import httpStatus from "http-status"
+import { conflictError } from "../errors/conflict.js";
 
 
 async function postPassengers(req, res){
@@ -9,15 +11,20 @@ async function postPassengers(req, res){
   res.sendStatus(httpStatus.CREATED)
 }
 
- async function postCities(req, res){
+async function postCities(req, res){
   const { name } = req.body  
 
   await allCompaniService.postCities(name)
   res.sendStatus(httpStatus.CREATED)
 }
 
- async function postFlights(){
-   
+ async function postFlights(req, res){
+  const { origin, destination, date } = req.body  
+
+  if(origin === destination) throw conflictError("Destino e origem iguais")
+
+  await allCompaniService.postFlights(origin, destination, date)
+  res.sendStatus(httpStatus.CREATED)
 }
 
  async function postTravels(){

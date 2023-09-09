@@ -1,5 +1,6 @@
 import allRepository from "../repositories/all.repository.js";
 import { conflictError } from "../errors/conflict.js"
+import { notFoundError } from "../errors/notFound.js";
 
  async function postPassengers(firstName, lastName){
   
@@ -15,8 +16,11 @@ import { conflictError } from "../errors/conflict.js"
    
 }
 
- async function postFlights(){
-   
+ async function postFlights(origin, destination, date){
+  const existingOrigin = await allRepository.consultCities(origin)
+  const existingDestination = await allRepository.consultCities(destination)
+  if (!existingOrigin || !existingDestination) throw notFoundError("Cidade origem ou destino")
+  return allRepository.postFlights(origin, destination, date)
 }
 
  async function postTravels(){
