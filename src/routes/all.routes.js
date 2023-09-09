@@ -1,6 +1,6 @@
 import { Router } from "express";
 import allControllers from "../controllers/all.controller.js";
-import { citiesschema, flightsschema, passengersschema } from "../schemas/all.schemas.js";
+import { citiesschema, flightsschema, passengersschema, travelsschema } from "../schemas/all.schemas.js";
 import validateSchema from "../middlewares/validateSchema.js";
 
 
@@ -10,7 +10,7 @@ allRouter.post("/passengers", validateSchema(passengersschema), allControllers.p
 allRouter.post("/cities", validateSchema(citiesschema), allControllers.postCities);
 
 allRouter.post("/flights", validateSchema(flightsschema), allControllers.postFlights );
-allRouter.post("/travels", allControllers.postTravels );
+allRouter.post("/travels", validateSchema(travelsschema), allControllers.postTravels );
 allRouter.get("/flights", allControllers.getFlights );
 allRouter.get("/passengers/travels", allControllers.getPassengersTravels );
 

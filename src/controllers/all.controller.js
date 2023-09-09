@@ -22,13 +22,14 @@ async function postCities(req, res){
   const { origin, destination, date } = req.body  
 
   if(origin === destination) throw conflictError("Destino e origem iguais")
-
   await allCompaniService.postFlights(origin, destination, date)
   res.sendStatus(httpStatus.CREATED)
 }
 
- async function postTravels(){
-   
+ async function postTravels(req, res){
+  const { passengerId, flightId } = req.body
+  await allCompaniService.postTravels( passengerId, flightId)
+  res.sendStatus(httpStatus.CREATED)
 }
 
  async function getFlights(){

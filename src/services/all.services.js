@@ -23,8 +23,11 @@ import { notFoundError } from "../errors/notFound.js";
   return allRepository.postFlights(origin, destination, date)
 }
 
- async function postTravels(){
-   
+ async function postTravels(passengerId, flightId){
+  const existingPassenger = await allRepository.consultPassenger(passengerId)
+  const existingFlight = await allRepository.consultFlight(flightId)
+  if (!existingPassenger || !existingFlight) throw notFoundError("passageiro ou voo")
+  return allRepository.postTravels(passengerId, flightId)
 }
 
  async function getFlights(){
