@@ -22,3 +22,5 @@ export const travelsschema = joi.object({
     passengerId: joi.number().integer().min(1).required(),
     flightId: joi.number().integer().min(1).required()
 })
+
+export  const dateSchema = joi.date().format('DD-MM-YYYY').messages({ 'date.format': 'Date must be in the format DD-MM-YYYY'})

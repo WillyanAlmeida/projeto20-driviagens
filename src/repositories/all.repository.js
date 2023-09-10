@@ -66,7 +66,49 @@ async function postTravels(passengerId, flightId) {
   )
 }
 
-async function getFlights() {
+async function getFlights(req, res) {
+
+  const { origin, destination, smaller_date, bigger_date } = req.query;
+
+  let query = `
+  SELECT f.id, c1.name AS origin, c2.name AS destination, f.date
+  FROM flights f
+  INNER JOIN cities c1 ON f.origin = c1.id
+  INNER JOIN cities c2 ON f.destination = c2.id
+`;
+
+const queryParams = []
+
+if (origin) {
+  query += 'WHERE c1.name = $1 '
+  queryParams.push(origin)
+}
+
+if (destination) {
+  if (origin) {
+    query += 'AND '
+  } else {
+    query += 'WHERE '
+  }
+  query += 'c2.name = $2 '
+  queryParams.push(destination)
+}
+
+if (smaller_date && bigger_date) {
+  if (origin || destination) {
+    query += 'AND '
+  } else {
+    query += 'WHERE '
+  }
+  query += 'f.date BETWEEN $3 AND $4 '
+  queryParams.push(smaller_date, bigger_date)
+}
+
+query += 'ORDER BY f.date'
+
+const result = await db.query(query, queryParams)
+
+return result.rows
 
 }
 
