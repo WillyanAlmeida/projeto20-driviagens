@@ -1,5 +1,6 @@
 
 import { db } from "../database/database.connection.js";
+import { internalServerError } from "../errors/internalServer.js";
 
 async function postPassengers(firstName, lastName) {
   await db.query(
@@ -77,42 +78,68 @@ async function getFlights(req, res) {
   INNER JOIN cities c2 ON f.destination = c2.id
 `;
 
-const queryParams = []
+  const queryParams = []
 
-if (origin) {
-  query += 'WHERE c1.name = $1 '
-  queryParams.push(origin)
-}
-
-if (destination) {
   if (origin) {
-    query += 'AND '
-  } else {
-    query += 'WHERE '
+    query += 'WHERE c1.name = $1 '
+    queryParams.push(origin)
   }
-  query += 'c2.name = $2 '
-  queryParams.push(destination)
-}
 
-if (smaller_date && bigger_date) {
-  if (origin || destination) {
-    query += 'AND '
-  } else {
-    query += 'WHERE '
+  if (destination) {
+    if (origin) {
+      query += 'AND '
+    } else {
+      query += 'WHERE '
+    }
+    query += 'c2.name = $2 '
+    queryParams.push(destination)
   }
-  query += 'f.date BETWEEN $3 AND $4 '
-  queryParams.push(smaller_date, bigger_date)
+
+  if (smaller_date && bigger_date) {
+    if (origin || destination) {
+      query += 'AND '
+    } else {
+      query += 'WHERE '
+    }
+    query += 'f.date BETWEEN $3 AND $4 '
+    queryParams.push(smaller_date, bigger_date)
+  }
+
+  query += 'ORDER BY f.date'
+
+  const result = await db.query(query, queryParams)
+
+  return result.rows
+
 }
 
-query += 'ORDER BY f.date'
+async function getPassengersTravels(req, res) {
 
-const result = await db.query(query, queryParams)
+  const { name } = req.query;
+  const limit = 10;
 
-return result.rows
+  let query = `
+      SELECT p.firstname || ' ' || p.lastname AS passenger, COUNT(t.id) AS travels
+      FROM passengers p
+      LEFT JOIN travels t ON p.id = t.passengerid
+    `;
 
-}
+  const queryParams = [];
 
-async function getPassengersTravels() {
+  if (name) {
+    query += 'WHERE p.firstname || \' \' || p.lastname ILIKE $1 ';
+    queryParams.push(`%${name}%`);
+  }
+
+  query += `GROUP BY passenger ORDER BY travels DESC LIMIT $${queryParams.length + 1}`;
+  queryParams.push(limit);
+
+
+  const result = await db.query(query, queryParams);
+
+  if (result.rows.length > limit) throw internalServerError('Too many results')
+
+  return result.rows;
 
 }
 

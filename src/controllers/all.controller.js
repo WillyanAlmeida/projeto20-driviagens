@@ -45,8 +45,9 @@ async function getFlights(req, res) {
 
 }
 
-async function getPassengersTravels() {
-
+async function getPassengersTravels(req, res) {
+  const travels = await allCompaniService.getPassengersTravels(req,res)
+  res.send(travels)
 }
 
 const allControllers = {

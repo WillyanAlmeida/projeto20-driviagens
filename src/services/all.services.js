@@ -2,6 +2,7 @@ import allRepository from "../repositories/all.repository.js";
 import { conflictError } from "../errors/conflict.js"
 import { notFoundError } from "../errors/notFound.js";
 import { dateSchema } from "../schemas/all.schemas.js";
+import { unprocessableError } from "../errors/unprocessable.js";
 
  async function postPassengers(firstName, lastName){
   
@@ -36,24 +37,21 @@ import { dateSchema } from "../schemas/all.schemas.js";
   const { error: smallerDateError } = dateSchema.validate(smaller_date);
   const { error: biggerDateError } = dateSchema.validate(bigger_date);
 
-  if (smallerDateError || biggerDateError) {
-    return res.status(422).json({ error: 'Formato de data inválido' });
-  }
+  if (smallerDateError || biggerDateError) throw unprocessableError('Formato de data inválido')
 
-  if ((smaller_date && !bigger_date) || (!smaller_date && bigger_date)) {
-    return res.status(422).json({ error: 'Ambos os parâmetros smaller-date e bigger-date devem ser fornecidos juntos' });
-  }
+  if ((smaller_date && !bigger_date) || (!smaller_date && bigger_date)) throw unprocessableError('Ambos os parâmetros smaller-date e bigger-date devem ser fornecidos juntos')
 
-  if (smaller_date > bigger_date) {
-    return res.status(400).json({ error: 'A data menor não pode ser maior que a data maior' });
-  }
-
+  if (smaller_date > bigger_date) throw unprocessableError('A data menor não pode ser maior que a data maior')
+    
   const flights = await allRepository.getFlights(req, res)
    return flights
 }
 
- async function getPassengersTravels(){
-   
+ async function getPassengersTravels(req, res){
+  const { name } = req.query;
+ 
+  const travels = await allRepository.getPassengersTravels(req, res)
+   return travels
 }
 
 const allCompaniService = {
