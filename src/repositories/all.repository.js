@@ -4,7 +4,7 @@ import { internalServerError } from "../errors/internalServer.js";
 
 async function postPassengers(firstName, lastName) {
   await db.query(
-    `INSERT INTO passengers (firstName, lastName) VALUES ($1, $2);`,
+    `INSERT INTO passengers ("firstName", "lastName") VALUES ($1, $2);`,
     [firstName, lastName]
   )
 }
@@ -62,7 +62,7 @@ async function postFlights(origin, destination, date) {
 
 async function postTravels(passengerId, flightId) {
   await db.query(
-    `INSERT INTO travels (passengerId, flightId) VALUES ($1, $2);`,
+    `INSERT INTO travels ("passengerId", "flightId") VALUES ($1, $2);`,
     [passengerId, flightId]
   )
 }
@@ -72,7 +72,7 @@ async function getFlights(req, res) {
   const { origin, destination, smaller_date, bigger_date } = req.query;
 
   let query = `
-  SELECT f.id, c1.name AS origin, c2.name AS destination, f.date
+  SELECT f.id, c1.name AS origin, c2.name AS destination, TO_CHAR(f.date, 'DD-MM-YYYY') AS date
   FROM flights f
   INNER JOIN cities c1 ON f.origin = c1.id
   INNER JOIN cities c2 ON f.destination = c2.id
@@ -119,15 +119,15 @@ async function getPassengersTravels(req, res) {
   const limit = 10;
 
   let query = `
-      SELECT p.firstname || ' ' || p.lastname AS passenger, COUNT(t.id) AS travels
+      SELECT p."firstName" || ' ' || p."lastName" AS passenger, COUNT(t.id) AS travels
       FROM passengers p
-      LEFT JOIN travels t ON p.id = t.passengerid
+      LEFT JOIN travels t ON p.id = t."passengerId"
     `;
 
   const queryParams = [];
 
   if (name) {
-    query += 'WHERE p.firstname || \' \' || p.lastname ILIKE $1 ';
+    query += 'WHERE p."firstName" || \' \' || p."lastName" ILIKE $1 ';
     queryParams.push(`%${name}%`);
   }
 
